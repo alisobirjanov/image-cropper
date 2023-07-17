@@ -3,15 +3,15 @@
 
     <div class="cropper-wrap-box">
       <div class="cropper-canvas">
-        <img v-if="imageUrl" :src="imageUrl" alt="Picture" class="" :style="getStyles">
+        <img v-if="imgData.url" :src="imgData.url" alt="Picture" class="" :style="getStyles">
       </div>
     </div>
 
     <div class="cropper-modal"></div>
 
     <DraggableResizable v-model="data">
-      <span class="view-box" v-if="imageUrl">
-        <img :src="imageUrl" alt="file.png" :style="getViewBoxStyles" />
+      <span class="view-box" v-if="imgData.url">
+        <img :src="imgData.url" alt="file.png" :style="getViewBoxStyles" />
       </span>
     </DraggableResizable>
   </DraggableResizableContainer>
@@ -25,6 +25,10 @@ import { loadImage, calcCenter, saveAs } from '../utils'
 
 import imgUrl from '../assets/img.jpg'
 
+import { Cropper } from './Cropper'
+
+const cropper = new Cropper({width: 500, height: 500})
+
 const data = ref({
   width: 250,
   height: 250,
@@ -34,6 +38,7 @@ const data = ref({
 
 
 const imgData = ref({
+  url: '',
   width: 0,
   height: 0,
   x: 0,
@@ -106,9 +111,12 @@ async function init(url: string) {
     x: calcCenter(CROP_BOX_WIDTH, CROP_BOX_WIDTH * (width / height)),
     y: 0
   }
+
 }
 
 function save() {
+  cropper.savaAs(data.value)
+  return
   if (!imgEll) return
   const canvas = document.createElement('canvas')
   const context = canvas.getContext('2d')
@@ -137,28 +145,38 @@ function save() {
 
 
 function selectImage() {
-  const input = document.createElement('input')
-  input.setAttribute('type', 'file')
-  input.setAttribute('accept', 'image/*')
-
-  input.addEventListener('input', (event: Event) => {
-    const blob = (event.target as HTMLInputElement).files
-    if (blob) {
-      imageUrl.value = URL.createObjectURL(blob[0])
-      init(imageUrl.value || imgUrl)
-    }
+  cropper.selectImage().then(data => {
+    console.log(data)
+    imgData.value = data
   })
+  // const input = document.createElement('input')
+  // input.setAttribute('type', 'file')
+  // input.setAttribute('accept', 'image/*')
 
-  input.click()
+  // input.addEventListener('input', (event: Event) => {
+  //   const blob = (event.target as HTMLInputElement).files
+  //   if (blob) {
+  //     imageUrl.value = URL.createObjectURL(blob[0])
+  //     init(imageUrl.value || imgUrl)
+  //   }
+  // })
+
+  // input.click()
 }
 
-init(imgUrl)
+// init(imgUrl).then(() => {
+//   console.log(imgData.value)
+// })
+
+cropper.loadImage(imgUrl).then(data3 => {
+  console.log(data3, 'data')
+  imgData.value = data3
+})
 
 defineExpose({
   selectImage,
   saveAs: save
 })
-
 
 </script>
 
@@ -202,4 +220,3 @@ defineExpose({
   width: 100%;
 }
 </style>
-../DraggableResizable/DraggableResizableContainer.vue../DraggableResizable/DraggableResizable.vue

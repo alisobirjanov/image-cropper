@@ -5,7 +5,7 @@
        <ImageCropper ref="cropper"/>
     </div>
 
-    <div class="btns">
+    <div class="btns" v-if="cropper">
        <button @click="cropper.selectImage">Select file</button>
        <button @click="cropper.saveAs">Save</button>
     </div>
@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref } from 'vue'
 import ImageCropper from './ImageCropper/index.vue'
 
 const cropper = ref(null)
