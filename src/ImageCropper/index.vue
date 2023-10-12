@@ -9,7 +9,7 @@
 
     <div class="cropper-modal"></div>
 
-    <DraggableResizable v-model="data">
+    <DraggableResizable v-model="crop">
       <span class="view-box" v-if="imgData.url">
         <img :src="imgData.url" alt="file.png" :style="getViewBoxStyles" />
       </span>
@@ -21,7 +21,6 @@
 import { ref, computed } from 'vue';
 import DraggableResizableContainer from '../DraggableResizable/DraggableResizableContainer.vue';
 import DraggableResizable from '../DraggableResizable/DraggableResizable.vue';
-import { loadImage, calcCenter, saveAs } from '../utils'
 
 import imgUrl from '../assets/img.jpg'
 
@@ -29,7 +28,7 @@ import { Cropper } from './Cropper'
 
 const cropper = new Cropper({width: 500, height: 500})
 
-const data = ref({
+const crop = ref({
   width: 250,
   height: 250,
   x: 100,
@@ -54,11 +53,8 @@ const getStyles = computed(() => {
   }
 })
 
-let imgEll: HTMLImageElement | null = null
-
-
 const getViewBoxStyles = computed(() => {
-  const { x, y } = data.value
+  const { x, y } = crop.value
   const { width, height, x: a, y: b } = imgData.value
 
   return {
@@ -68,109 +64,19 @@ const getViewBoxStyles = computed(() => {
   }
 })
 
-const CROP_BOX_WIDTH = 500
-let aspectRatio = 0
-
-const imageUrl = ref(imgUrl)
-
-
-async function init(url: string) {
-  imgEll = await loadImage(url)
-
-  const width = imgEll.width
-  const height = imgEll.height
-
-  if (Math.max(width, height) < CROP_BOX_WIDTH) {
-    aspectRatio = 1
-    imgData.value = {
-      height,
-      width,
-      x: calcCenter(CROP_BOX_WIDTH, width),
-      y: calcCenter(CROP_BOX_WIDTH, height)
-    }
-    return
-  }
-
-  if (width > height) {
-    aspectRatio = CROP_BOX_WIDTH / width
-    imgData.value = {
-      height: CROP_BOX_WIDTH * (height / width),
-      width: CROP_BOX_WIDTH,
-      x: 0,
-      y: calcCenter(CROP_BOX_WIDTH, CROP_BOX_WIDTH * (height / width))
-    }
-    return
-  }
-
-
-  aspectRatio = CROP_BOX_WIDTH / height
-
-  imgData.value = {
-    width: CROP_BOX_WIDTH * (width / height),
-    height: CROP_BOX_WIDTH,
-    x: calcCenter(CROP_BOX_WIDTH, CROP_BOX_WIDTH * (width / height)),
-    y: 0
-  }
-
-}
-
 function save() {
-  cropper.savaAs(data.value)
-  return
-  if (!imgEll) return
-  const canvas = document.createElement('canvas')
-  const context = canvas.getContext('2d')
-
-  const { width: w, height: h, x, y } = data.value
-  const { x: a, y: b } = imgData.value
-
-  canvas.width = w / aspectRatio
-  canvas.height = h / aspectRatio
-
-  const dx = (x - a) / aspectRatio
-  const dy = (y - b) / aspectRatio
-
-  const sw = w / aspectRatio
-  const sh = h / aspectRatio
-
-  context?.drawImage(imgEll, dx, dy, sw, sh, 0, 0, sw, sh)
-
-  canvas.toBlob((blob) => {
-    if (blob) {
-      const url = URL.createObjectURL(blob)
-      saveAs(url, 'image.png')
-    }
-  });
+  cropper.savaAs(crop.value)
 }
 
 
 function selectImage() {
   cropper.selectImage().then(data => {
-    console.log(data)
     imgData.value = data
   })
-  // const input = document.createElement('input')
-  // input.setAttribute('type', 'file')
-  // input.setAttribute('accept', 'image/*')
-
-  // input.addEventListener('input', (event: Event) => {
-  //   const blob = (event.target as HTMLInputElement).files
-  //   if (blob) {
-  //     imageUrl.value = URL.createObjectURL(blob[0])
-  //     init(imageUrl.value || imgUrl)
-  //   }
-  // })
-
-  // input.click()
 }
 
-// init(imgUrl).then(() => {
-//   console.log(imgData.value)
-// })
-
-cropper.loadImage(imgUrl).then(data3 => {
-  console.log(data3, 'data')
-  imgData.value = data3
+cropper.loadImage(imgUrl).then(data => {
+  imgData.value = data
 })
 
 defineExpose({
@@ -219,4 +125,5 @@ defineExpose({
   overflow: hidden;
   width: 100%;
 }
+
 </style>

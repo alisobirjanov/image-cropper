@@ -1,4 +1,4 @@
-import { loadImage, calcCenter, saveAs } from '../utils';
+import { loadImage, calcCenter, saveAs } from '../utils'
 
 interface ImageData {
   width: number,
