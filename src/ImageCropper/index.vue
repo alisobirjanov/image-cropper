@@ -21,7 +21,7 @@
 import { ref, computed } from 'vue';
 import DraggableResizableContainer from '../DraggableResizable/DraggableResizableContainer.vue'
 import DraggableResizable from '../DraggableResizable/DraggableResizable.vue'
-
+// @ts-ignore
 import imgUrl from '../assets/img.jpg'
 
 import { Cropper } from './Cropper'
