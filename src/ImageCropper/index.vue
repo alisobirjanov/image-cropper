@@ -19,8 +19,8 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import DraggableResizableContainer from '../DraggableResizable/DraggableResizableContainer.vue';
-import DraggableResizable from '../DraggableResizable/DraggableResizable.vue';
+import DraggableResizableContainer from '../DraggableResizable/DraggableResizableContainer.vue'
+import DraggableResizable from '../DraggableResizable/DraggableResizable.vue'
 
 import imgUrl from '../assets/img.jpg'
 
