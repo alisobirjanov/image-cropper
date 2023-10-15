@@ -70,7 +70,7 @@ function save() {
 
 
 function selectImage() {
-  cropper.selectImage().then(data => {
+  cropper.selectImage().then((data : any) => {
     imgData.value = data
   })
 }
